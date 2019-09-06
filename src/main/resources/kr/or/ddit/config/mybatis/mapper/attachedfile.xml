@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="atf">
+
+	<insert id="insertAtf" parameterType="atf">
+		insert into attachedfile(atfNum, atfNm, atfPath, postNum)
+    		values(seq_attachedfile.nextval, #{atfNm}, #{atfPath}, #{postNum})
+	</insert>
+
+	<select id="getAttachedFile" parameterType="int" resultType="atf">
+		select *
+		  from attachedfile
+		 where postNum = #{postNum}
+	</select>
+	
+	<delete id="deleteAtf" parameterType="int">
+		delete from attachedfile where atfNum=#{atfNum}
+	</delete>
+	
+	<select id="selectAtf" parameterType="int" resultType="atf">
+		select * from attachedfile where atfNum=#{atfNum} 
+	</select>
+</mapper>

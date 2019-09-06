@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="post">
+
+  <select id="allPostList" parameterType="int" resultType="post">
+	select * from post where boardNum = #{boardNum}
+  </select>
+	
+
+    <select id="getPostList" parameterType="map" resultType="post">
+       select  *
+         from   (select rownum rn, a.*
+                   from  (select postNum, postTitle, postContent, postDate, delStatus, userId, boardNum, parentPostNum, gn, level
+                            from post
+                           start with parentPostNum is null
+                         connect by prior postNum = parentPostNum
+                           order siblings by gn desc, postNum)a
+                  where boardNum = #{boardNum})a
+        where a.rn between (#{pagesize} * (#{page} - 1)) + 1 and (#{pagesize} * #{page})
+    </select>
+  
+    <select id="selectPost" parameterType="int" resultType="post">
+		select * from post where postNum = #{data}
+    </select>
+	
+	<select id="getPostSeq" resultType="int">
+		select seq_postNum.nextval from dual
+	</select>
+	
+	<insert id="insertPost" parameterType="post">
+		insert into post(postNum, postTitle, postContent, postDate, delStatus, userId, boardNum, gn)
+   			values(#{postNum}, #{postTitle}, #{postContent}, sysdate, 'N', #{userId}, #{boardNum}, seq_gn.nextval)
+	</insert>
+	
+	<insert id="insertPost2" parameterType="post">
+		insert into post(postNum, postTitle, postContent, postDate, delStatus, userId, boardNum, parentPostNum, gn)
+   			values(#{postNum}, #{postTitle}, #{postContent}, sysdate, 'N', #{userId}, #{boardNum}, #{parentPostNum}, #{gn})
+	</insert>
+	
+	<update id="deletePost" parameterType="post">
+		update post set delStatus=#{delStatus} where postNum=#{postNum}
+	</update>
+	
+	<update id="updatePost" parameterType="post">
+		update post set postTitle=#{postTitle}, postContent=#{postContent}, postDate=sysdate where postNum=#{postNum}
+	</update>
+    
+</mapper>
